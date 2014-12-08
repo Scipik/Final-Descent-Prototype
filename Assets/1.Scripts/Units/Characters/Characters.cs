@@ -54,16 +54,23 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		actionsRemaining = maxActions;
 	}
 	
-	
 	// Movement Interface implementation
 	public virtual void displayMoveableArea() {
-		print ("Display moveable area");
+		onTile.enroachmentStart(actionsRemaining);
+	}
+	
+	public virtual void removeMoveableArea() {
+		onTile.deroachmentStart(actionsRemaining);
 	}
 	
 	public virtual void move(GameObject moveTo) {
+		removeMoveableArea();
+	
 		Vector3 newPosition = moveTo.transform.position;
 		newPosition.y = newPosition.y + transform.position.y;
 		transform.position = newPosition;
+		
+		// Decrement actions remaining here
 	}
 	
 	

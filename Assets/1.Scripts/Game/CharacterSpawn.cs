@@ -27,6 +27,10 @@ public class CharacterSpawn : MonoBehaviour {
 		
 		GameObject hero = Instantiate(heroes[0], newPosition, Quaternion.identity) as GameObject;
 		hero.transform.parent = transform;
+		hero.GetComponent<Characters>().onTile = temp.GetComponent<Tile>();
+		temp.GetComponent<Tile>().taken = hero;
+		
+		// hero.GetComponent<Characters>().activate();
 	}
 	
 	// Update is called once per frame

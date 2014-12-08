@@ -37,8 +37,11 @@ public class PlayerController : MonoBehaviour {
 						guiDisplay = 1;
 					}
 				} else {
-					if (hit.collider.gameObject.tag == "Tile" && guiDisplay == 2) {
-						selection.move(hit.collider.gameObject);
+					if (guiDisplay == 2 && hit.collider.gameObject.tag == "Tile") {
+						if (hit.collider.gameObject.GetComponent<Tile>().highlighted) {
+							selection.move(hit.collider.gameObject);
+							guiDisplay = 1;
+						}
 					}
 				}
 			}
@@ -57,6 +60,7 @@ public class PlayerController : MonoBehaviour {
 						break;
 					case 2: // Movement menu
 						guiDisplay = 1;
+						selection.GetComponent<Characters>().removeMoveableArea();
 						break;
 					case 3: // Attack Menu
 						guiDisplay = 1;
@@ -82,7 +86,7 @@ public class PlayerController : MonoBehaviour {
 			switch (guiDisplay) {
 				case 1: // Basic Character actions
 					if (GUI.Button(new Rect(20, 60, 150, 40), "Move")) {
-						Debug.Log("Movement Pressed");
+						selection.displayMoveableArea();
 						guiDisplay = 2;
 					}
 					if (GUI.Button(new Rect(20, 120, 150, 40), "Attack")) {
@@ -92,7 +96,6 @@ public class PlayerController : MonoBehaviour {
 					break;
 				case 2:
 					GUI.TextField(new Rect(20, 60, 150, 20), "Movement", 25);
-					selection.displayMoveableArea();
 					break;
 				case 3: // Attack actions
 					if (GUI.Button(new Rect(20, 60, 150, 40), "Normal Attack")) {
