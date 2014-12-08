@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// GridSpawn class
+// Spawns the grid of the world
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,8 +11,7 @@ public class GridSpawn : MonoBehaviour {
 	public FieldMaster field;
 	public List<List<GameObject>> gridColumns = new List<List<GameObject>>();
 
-	// Use this for initialization
-	void Start () {
+	void Awake() {
 		float scale = 2f;
 		
 		// Insert List of tiles into the 2d List
@@ -29,6 +31,11 @@ public class GridSpawn : MonoBehaviour {
 		
 		setTile ();
 		field.initialRotate ();
+	}
+
+	// Use this for initialization
+	void Start () {
+		
 	}
 	
 	// Update is called once per frame

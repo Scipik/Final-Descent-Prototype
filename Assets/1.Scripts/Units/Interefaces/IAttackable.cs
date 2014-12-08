@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Attack interface
+// Units can attack implement this
+
+using UnityEngine;
 using System.Collections;
 
 public interface IAttackable<T, Y> {

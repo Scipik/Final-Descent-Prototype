@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿// Character class
+// Base class that our heroes will inherit from
+// Note: Might create one for enemies later,
+//       thus code may be moved to general unit class and this will inherit from it
+
+using UnityEngine;
 using System.Collections;
 
-public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveable<GameObject>, IAttackable<GameObject, GameObject[]> {
+public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>, IMoveable<GameObject>, IAttackable<GameObject, GameObject[]> {
 
 	// Number of actions a character has at the start of turn
 	private int _maxActions;
@@ -14,6 +19,7 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 	}
 	protected int actionsRemaining;
 	
+	public Tile onTile; // Tile unit is on
 
 	// Use this for initialization
 	protected virtual void Start () {
@@ -26,6 +32,8 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 	
 	}
 	
+	
+	// Character stats are set here (Meant to be overridden)
 	public virtual void setInitialUnitValues() {
 		maxActions = 1;
 	}
@@ -41,6 +49,12 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 	}
 	
 	
+	// Actor Interface
+	public virtual void activate() {
+		actionsRemaining = maxActions;
+	}
+	
+	
 	// Movement Interface implementation
 	public virtual void displayMoveableArea() {
 		print ("Display moveable area");
@@ -48,7 +62,6 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 	
 	public virtual void move(GameObject moveTo) {
 		Vector3 newPosition = moveTo.transform.position;
-		print ("Moving to: " + newPosition);
 		newPosition.y = newPosition.y + transform.position.y;
 		transform.position = newPosition;
 	}

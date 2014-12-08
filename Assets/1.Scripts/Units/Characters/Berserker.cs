@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Berserker 
+
+using UnityEngine;
 using System.Collections;
 
 public class Berserker : Characters {

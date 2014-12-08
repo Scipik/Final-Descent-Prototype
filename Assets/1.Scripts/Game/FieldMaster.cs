@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// FieldMaster Class
+// Deals with rotation of field
+
+using UnityEngine;
 using System.Collections;
 
 public class FieldMaster : MonoBehaviour {

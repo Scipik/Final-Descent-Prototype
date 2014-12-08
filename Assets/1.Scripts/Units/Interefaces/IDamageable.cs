@@ -1,3 +1,6 @@
+// Damage Interface
+// Units that can take damage, heal, or die implement this
+
 using UnityEngine;
 using System.Collections;
 

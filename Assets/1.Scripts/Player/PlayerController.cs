@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Class for our player controller
+// Handles keyboard and mouse clicks and also our GUI (May move this to anther class later)
+
+using UnityEngine;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {

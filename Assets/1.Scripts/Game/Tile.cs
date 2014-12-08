@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿// Tile Code
+// The tiles that represent our grid
+// Hold position and unit information
+
+using UnityEngine;
 using System.Collections;
-
-
 
 public class Tile : MonoBehaviour {
 
