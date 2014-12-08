@@ -3,12 +3,23 @@ using System.Collections;
 
 public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveable<GameObject>, IAttackable<GameObject, GameObject[]> {
 
-	protected int actions;
+	// Number of actions a character has at the start of turn
+	private int _maxActions;
+	public int maxActions {
+		get { return _maxActions; }
+		set {
+			if (value < 1) print ("Error: trying to set maxActions to less than zero");
+			else _maxActions = value;
+		}
+	}
+	protected int actionsRemaining;
+	
 
 	// Use this for initialization
 	protected virtual void Start () {
 		setInitialUnitValues ();
 	}
+	
 	
 	// Update is called once per frame
 	protected virtual void Update () {
@@ -16,8 +27,9 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 	}
 	
 	public virtual void setInitialUnitValues() {
-		actions = 1;
+		maxActions = 1;
 	}
+	
 	
 	// Select Interface implementation
 	public virtual void select() {
@@ -28,13 +40,19 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 		print ("Deselected");
 	}
 	
+	
 	// Movement Interface implementation
+	public virtual void displayMoveableArea() {
+		print ("Display moveable area");
+	}
+	
 	public virtual void move(GameObject moveTo) {
 		Vector3 newPosition = moveTo.transform.position;
 		print ("Moving to: " + newPosition);
 		newPosition.y = newPosition.y + transform.position.y;
 		transform.position = newPosition;
 	}
+	
 	
 	// Attack Interface implementation
 	public virtual void attack(GameObject obj) {
@@ -44,6 +62,7 @@ public class Characters : MonoBehaviour, ISelectable, IDamageable<int>, IMoveabl
 	public virtual void specialAttack(GameObject[] obj) {
 		print ("I need more than just 1 special!");
 	}
+	
 	
 	// Damage Interface implementation
 	public virtual void takeDamage(int damage) {

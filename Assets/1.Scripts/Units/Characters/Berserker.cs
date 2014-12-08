@@ -14,11 +14,11 @@ public class Berserker : Characters {
 	}
 	
 	public override void setInitialUnitValues () {
-		actions = 8;
+		base.setInitialUnitValues();
+		maxActions = 8;
 	}
 	
 	public override void select() {
-		base.select();
 		print ("Berserker");
 	}
 }

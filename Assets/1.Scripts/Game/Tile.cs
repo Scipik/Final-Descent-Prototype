@@ -29,25 +29,5 @@ public class Tile : MonoBehaviour {
 	
 	}
 	
-	/*
-	void OnMouseOver() {
-		renderer.material.color = Color.red;
-	}
 	
-	void OnMouseExit() {
-		renderer.material.color = baseColor;
-	}
-	
-	void OnMouseDown() {
-		string message = "";
-		for (int i = 0; i < neighbors.Length; i++) {
-			if (neighbors[i] != null) {
-				message += i + ": " + neighbors[i].GetComponent<Tile>().num + "; ";
-			} else {
-				message += i + ": Null; ";
-			}
-			print(message);
-		}
-	}
-	*/
 }
