@@ -17,7 +17,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 			else _maxActions = value;
 		}
 	}
-	protected int actionsRemaining;
+	public int actionsRemaining;
 	
 	public Tile onTile; // Tile unit is on
 

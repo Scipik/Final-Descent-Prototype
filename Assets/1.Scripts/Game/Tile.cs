@@ -11,6 +11,7 @@ public class Tile : MonoBehaviour {
 	public int x, y; // Coordinate of tile in the list
 	
 	public bool highlighted;
+	public int distToSelectedUnit; // Used to decrement actions points
 	public GameObject taken; // Object that is on this tile
 	
 	public GameObject[] neighbors; // Tiles adjacent to this tile
@@ -44,14 +45,22 @@ public class Tile : MonoBehaviour {
 				
 				temp = nei.GetComponent<Tile>();
 				if (!temp.taken) {
-					temp.enroach(step);
+					temp.enroach(step, 0);
 				} 
 			}
 		}
 	}
 	
 	// Used to expand the area from initial
-	public void enroach(int step) {
+	public void enroach(int step, int dist) {
+		dist++;
+		if (highlighted) {
+			if (dist < distToSelectedUnit) {
+				distToSelectedUnit = dist;
+			}
+		} else {
+			distToSelectedUnit = dist;
+		}
 		highlighted = true;
 		renderer.material.color = Color.green;
 		step--;
@@ -64,7 +73,7 @@ public class Tile : MonoBehaviour {
 				
 				temp = nei.GetComponent<Tile>();
 				if (!temp.taken) {
-					temp.enroach(step);
+					temp.enroach(step, dist);
 				} 
 			}
 		}
@@ -88,6 +97,7 @@ public class Tile : MonoBehaviour {
 	
 	// Used to remove the expanded area from initial;
 	public void deroach(int step) {
+		distToSelectedUnit = 0;
 		highlighted = false;
 		renderer.material.color = baseColor;
 		step--;

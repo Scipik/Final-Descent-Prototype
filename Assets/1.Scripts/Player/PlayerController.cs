@@ -73,36 +73,32 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		/*
-		guiFuncDelegate baseDisplay = new guiFuncDelegate(() => {
-			
-		}); */
-		
-		
 		if (selection != null) {
 			GUI.TextField(new Rect(20, 20, 150, 20), selection.name, 25);
 			// print ("fancy Action point and turn movement list");
 			
+			GUI.TextField(new Rect(20, 60, 150, 20), "AP Remaining: " + selection.actionsRemaining, 25);
+			
 			switch (guiDisplay) {
 				case 1: // Basic Character actions
-					if (GUI.Button(new Rect(20, 60, 150, 40), "Move")) {
+					if (GUI.Button(new Rect(20, 100, 150, 40), "Move")) {
 						selection.displayMoveableArea();
 						guiDisplay = 2;
 					}
-					if (GUI.Button(new Rect(20, 120, 150, 40), "Attack")) {
+					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack")) {
 						Debug.Log("Attack Pressed");
 						guiDisplay = 3;
 					}
 					break;
 				case 2:
-					GUI.TextField(new Rect(20, 60, 150, 20), "Movement", 25);
+					GUI.TextField(new Rect(20, 100, 150, 20), "Movement", 25);
 					break;
 				case 3: // Attack actions
-					if (GUI.Button(new Rect(20, 60, 150, 40), "Normal Attack")) {
+					if (GUI.Button(new Rect(20, 100, 150, 40), "Normal Attack")) {
 						Debug.Log("Normal attack");
 						guiDisplay = 0;
 					}
-					if (GUI.Button(new Rect(20, 120, 150, 40), "Skills?")) {
+					if (GUI.Button(new Rect(20, 160, 150, 40), "Skills?")) {
 						Debug.Log("Special Powa");
 						guiDisplay = 0;
 					}
