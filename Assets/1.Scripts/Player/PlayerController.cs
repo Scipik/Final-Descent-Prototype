@@ -22,6 +22,11 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
 		leftClick ();
 		rightClick();
+		
+		
+		if (Input.GetKeyDown (KeyCode.Space) && selection != null && (guiDisplay == 0 || guiDisplay == 1)) {
+			selection.activate();
+		}
 	}
 	
 	// Functions for left clicking (Selection or Commands)
@@ -39,7 +44,7 @@ public class PlayerController : MonoBehaviour {
 				} else {
 					if (guiDisplay == 2 && hit.collider.gameObject.tag == "Tile") {
 						if (hit.collider.gameObject.GetComponent<Tile>().highlighted) {
-							selection.move(hit.collider.gameObject);
+							selection.setMove(hit.collider.gameObject);
 							guiDisplay = 1;
 						}
 					}
@@ -75,7 +80,6 @@ public class PlayerController : MonoBehaviour {
 	void OnGUI() {
 		if (selection != null) {
 			GUI.TextField(new Rect(20, 20, 150, 20), selection.name, 25);
-			// print ("fancy Action point and turn movement list");
 			
 			GUI.TextField(new Rect(20, 60, 150, 20), "AP Remaining: " + selection.actionsRemaining, 25);
 			

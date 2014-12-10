@@ -6,7 +6,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>, IMoveable<GameObject>, IAttackable<GameObject, GameObject[]> {
+public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>, IMoveable<GameObject, Tile, Vector3, float>, IAttackable<GameObject, GameObject[]> {
 
 	// Number of actions a character has at the start of turn
 	private int _maxActions;
@@ -20,6 +20,9 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	public int actionsRemaining;
 	
 	public Tile onTile; // Tile unit is on
+	
+	private float movementAP; // Used to determine the speed of movment (Each grid movement is ideally .25s)
+	private Vector3 newPosition;
 
 	// Use this for initialization
 	protected virtual void Start () {
@@ -29,7 +32,6 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	
 	// Update is called once per frame
 	protected virtual void Update () {
-	
 	}
 	
 	
@@ -60,17 +62,41 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	}
 	
 	public virtual void removeMoveableArea() {
-		onTile.deroachmentStart(actionsRemaining);
+		onTile.deroachmentStart();
 	}
 	
-	public virtual void move(GameObject moveTo) {
-		removeMoveableArea();
-	
-		Vector3 newPosition = moveTo.transform.position;
+	public virtual void setMove(GameObject moveTo) {
+		newPosition = moveTo.transform.position;
 		newPosition.y = newPosition.y + transform.position.y;
-		transform.position = newPosition;
 		
-		actionsRemaining =- moveTo.GetComponent<Tile>().distToSelectedUnit;
+		print (moveTo.GetComponent<Tile>().distToSelectedUnit);
+		movementAP = moveTo.GetComponent<Tile>().distToSelectedUnit;
+		actionsRemaining -= moveTo.GetComponent<Tile>().distToSelectedUnit;
+		removeMoveableArea();
+		
+		move (moveTo.GetComponent<Tile>());
+	}
+	
+	public virtual void move(Tile newTile) {
+		onTile.taken = null;
+		
+		StartCoroutine(MoveToPosition(newPosition, movementAP/4.0f));
+		
+		onTile = newTile;
+		newTile.taken = gameObject;
+	}
+	
+	
+	// Movement coroutine, smooth movement
+	public virtual IEnumerator MoveToPosition(Vector3 position, float timeToMove) {
+		Vector3 currentPosition = transform.position;
+		
+		float t = 0f;
+		while (t < 1) {
+			t += Time.deltaTime/timeToMove;
+			transform.position = Vector3.Lerp(currentPosition, position, t);
+			yield return null;
+		}
 	}
 	
 	

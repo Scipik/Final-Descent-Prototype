@@ -80,39 +80,34 @@ public class Tile : MonoBehaviour {
 	}
 	
 	// Removes highlight starting with units initial position
-	public void deroachmentStart(int step) {
-		if (step > 0) {
-			Tile temp;
+	public void deroachmentStart() {
+		Tile temp;
 			
-			foreach (GameObject nei in neighbors) {
-				if (nei == null) continue;
+		foreach (GameObject nei in neighbors) {
+			if (nei == null) continue;
 				
-				temp = nei.GetComponent<Tile>();
-				if (!temp.taken) {
-					temp.deroach(step);
-				} 
-			}
+			temp = nei.GetComponent<Tile>();
+			if (!temp.taken && temp.highlighted) {
+				temp.deroach();
+			} 
 		}
 	}
 	
 	// Used to remove the expanded area from initial;
-	public void deroach(int step) {
+	public void deroach() {
 		distToSelectedUnit = 0;
 		highlighted = false;
 		renderer.material.color = baseColor;
-		step--;
 	
-		if (step > 0) {
-			Tile temp;
+		Tile temp;
 			
-			foreach (GameObject nei in neighbors) {
-				if (nei == null) continue;
+		foreach (GameObject nei in neighbors) {
+			if (nei == null) continue;
 				
-				temp = nei.GetComponent<Tile>();
-				if (!temp.taken) {
-					temp.deroach(step);
-				} 
-			}
+			temp = nei.GetComponent<Tile>();
+			if (!temp.taken && temp.highlighted) {
+				temp.deroach();
+			} 
 		}
 	}
 			
