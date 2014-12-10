@@ -70,7 +70,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		newPosition.y = newPosition.y + transform.position.y;
 		transform.position = newPosition;
 		
-		// Decrement actions remaining here
+		actionsRemaining =- moveTo.GetComponent<Tile>().distToSelectedUnit;
 	}
 	
 	

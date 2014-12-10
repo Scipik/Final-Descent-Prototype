@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour {
 
 	public FieldMaster field;
 	
-	// public delegate void guiFuncDelegate();
+	public GameObject highlightStats; // Reference to the obj we have highlighted for stat display
 	
 	private int guiDisplay; // int value so we know what gui's to display
 	private Characters selection;
@@ -81,17 +81,20 @@ public class PlayerController : MonoBehaviour {
 			
 			switch (guiDisplay) {
 				case 1: // Basic Character actions
-					if (GUI.Button(new Rect(20, 100, 150, 40), "Move")) {
+					if (GUI.Button(new Rect(20, 100, 150, 40), "Move (1)") || Input.GetKeyDown(KeyCode.Alpha1)) {
 						selection.displayMoveableArea();
 						guiDisplay = 2;
 					}
-					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack")) {
+					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack (2)") || Input.GetKeyDown(KeyCode.Alpha2)) {
 						Debug.Log("Attack Pressed");
 						guiDisplay = 3;
 					}
 					break;
 				case 2:
-					GUI.TextField(new Rect(20, 100, 150, 20), "Movement", 25);
+					if (highlightStats == null)
+						GUI.TextField(new Rect(20, 100, 150, 20), "AP Cost: 0", 25);
+					else
+						GUI.TextField(new Rect(20, 100, 150, 20), "AP Cost: " + highlightStats.GetComponent<Tile>().distToSelectedUnit, 25);
 					break;
 				case 3: // Attack actions
 					if (GUI.Button(new Rect(20, 100, 150, 40), "Normal Attack")) {

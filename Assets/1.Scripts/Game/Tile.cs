@@ -121,6 +121,7 @@ public class Tile : MonoBehaviour {
 	void OnMouseOver() {
 		if (highlighted) {
 			renderer.material.color = Color.blue;
+			GameObject.FindGameObjectWithTag("PlayerController").GetComponent<PlayerController>().highlightStats = gameObject;
 		}
 	}
 	
@@ -130,5 +131,6 @@ public class Tile : MonoBehaviour {
 		} else {
 			renderer.material.color = baseColor;
 		}
+		GameObject.FindGameObjectWithTag("PlayerController").GetComponent<PlayerController>().highlightStats = null;
 	}
 }

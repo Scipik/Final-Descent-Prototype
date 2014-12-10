@@ -26,7 +26,7 @@ public class CameraMovement : MonoBehaviour {
 	// Edge Panning Checks
 	void edgePanCheck() {
 		// +X axis checking
-		if (transform.position.x != pXLimit && Input.mousePosition.x > (screenWidth - boundary)) {
+		if (transform.position.x != pXLimit && (Input.mousePosition.x > (screenWidth - boundary) || Input.GetKey(KeyCode.D))) {
 			tempXPos = transform.position.x + cameraSensitivity * Time.deltaTime;
 			if (tempXPos > pXLimit)
 				tempXPos = pXLimit;
@@ -34,7 +34,7 @@ public class CameraMovement : MonoBehaviour {
 		}
 		
 		// -X axis checking
-		if (transform.position.x != nXLimit && Input.mousePosition.x < boundary) {
+		if (transform.position.x != nXLimit && (Input.mousePosition.x < boundary || Input.GetKey(KeyCode.A))) {
 			tempXPos = transform.position.x - cameraSensitivity * Time.deltaTime;
 			if (tempXPos < nXLimit)
 				tempXPos = nXLimit;
@@ -42,7 +42,7 @@ public class CameraMovement : MonoBehaviour {
 		}
 		
 		// +Z axis checking
-		if (transform.position.z != pYLimit && Input.mousePosition.y > (screenHeight - boundary)) {
+		if (transform.position.z != pYLimit && (Input.mousePosition.y > (screenHeight - boundary) || Input.GetKey(KeyCode.W))) {
 			tempYPos = transform.position.z + cameraSensitivity * Time.deltaTime;
 			if (tempYPos > pYLimit)
 				tempYPos = pYLimit;
@@ -50,7 +50,7 @@ public class CameraMovement : MonoBehaviour {
 		}
 			
 		// -Z axis checking
-		if (transform.position.z != nYLimit && Input.mousePosition.y < boundary) {
+		if (transform.position.z != nYLimit && (Input.mousePosition.y < boundary || Input.GetKey(KeyCode.S))) {
 			tempYPos = transform.position.z - cameraSensitivity * Time.deltaTime;
 			if (tempYPos < nYLimit)
 				tempYPos = nYLimit;
