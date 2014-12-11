@@ -62,6 +62,15 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		actionsRemaining = maxActions;
 	}
 	
+	public virtual void cancelAction() {
+		ActionNode temp = als.cancelLastAction(unitNum);
+		if (temp != null) {
+			if (typeof(MovementNode) == temp.GetType()) {
+				print ("Is movement");
+			}
+		}
+	}
+	
 	// Movement Interface implementation
 	public virtual void displayMoveableArea() {
 		onTile.enroachmentStart(actionsRemaining);
@@ -80,8 +89,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		actionsRemaining -= moveTo.GetComponent<Tile>().distToSelectedUnit;
 		removeMoveableArea();
 		
-		
-		unitNum = als.setAction(unitNum, 1, movementAP, moveTo);
+		unitNum = als.setAction(unitNum, movementAP, onTile, moveTo.GetComponent<Tile>());
 		// move (moveTo.GetComponent<Tile>());
 	}
 	

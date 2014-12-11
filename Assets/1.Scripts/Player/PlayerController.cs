@@ -22,11 +22,7 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
 		leftClick ();
 		rightClick();
-		
-		
-		if (Input.GetKeyDown (KeyCode.Space) && selection != null && (guiDisplay == 0 || guiDisplay == 1)) {
-			// selection.activate();
-		}
+		keyPresses();
 	}
 	
 	// Functions for left clicking (Selection or Commands)
@@ -77,6 +73,35 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
+	private void keyPresses() {
+		switch (guiDisplay) {
+			case 1: // Basic Character actions
+				if (Input.GetKeyDown(KeyCode.Alpha1)) {
+					selection.displayMoveableArea();
+					guiDisplay = 2;
+				}
+				if (Input.GetKeyDown(KeyCode.Alpha2)) {
+					Debug.Log("Attack Pressed");
+					guiDisplay = 3;
+				}
+				if (Input.GetKeyDown(KeyCode.Alpha3)) {
+					Debug.Log("Wait Pressed");
+					// Tells character to add action to que
+				}
+				if (Input.GetKeyDown(KeyCode.R)) {
+					selection.cancelAction ();
+				}
+				break;
+			case 2:
+			case 3:
+			default:
+				break;
+		}
+		if (Input.GetKeyDown (KeyCode.Space) && selection != null && (guiDisplay == 0 || guiDisplay == 1)) {
+			// selection.activate();
+		}
+	}
+	
 	void OnGUI() {
 		if (selection != null) {
 			GUI.TextField(new Rect(20, 20, 150, 20), selection.name, 25);
@@ -85,17 +110,21 @@ public class PlayerController : MonoBehaviour {
 			
 			switch (guiDisplay) {
 				case 1: // Basic Character actions
-					if (GUI.Button(new Rect(20, 100, 150, 40), "Move (1)") || Input.GetKeyDown(KeyCode.Alpha1)) {
+					if (GUI.Button(new Rect(20, 100, 150, 40), "Move (1)")) {
 						selection.displayMoveableArea();
 						guiDisplay = 2;
 					}
-					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack (2)") || Input.GetKeyDown(KeyCode.Alpha2)) {
+					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack (2)")) {
 						Debug.Log("Attack Pressed");
 						guiDisplay = 3;
 					}
-					if (GUI.Button(new Rect(20, 220, 150, 40), "Wait (3)") || Input.GetKeyDown(KeyCode.Alpha3)) {
+					if (GUI.Button(new Rect(20, 220, 150, 40), "Wait (3)")) {
 						Debug.Log("Wait Pressed");
 						// Tells character to add action to que
+					}
+					if (GUI.Button(new Rect(20, 280, 150, 40), "Cancel Action (R)")) {
+						selection.cancelAction ();
+						break;
 					}
 					break;
 				case 2:

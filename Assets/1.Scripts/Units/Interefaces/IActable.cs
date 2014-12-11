@@ -6,4 +6,5 @@ using System.Collections;
 
 public interface IActable {
 	void activate(); // Sets values when this units turn comes up
+	void cancelAction(); // Cancels last set action (Only for player characters)
 }
