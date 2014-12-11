@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour {
 		
 		
 		if (Input.GetKeyDown (KeyCode.Space) && selection != null && (guiDisplay == 0 || guiDisplay == 1)) {
-			selection.activate();
+			// selection.activate();
 		}
 	}
 	
@@ -92,6 +92,10 @@ public class PlayerController : MonoBehaviour {
 					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack (2)") || Input.GetKeyDown(KeyCode.Alpha2)) {
 						Debug.Log("Attack Pressed");
 						guiDisplay = 3;
+					}
+					if (GUI.Button(new Rect(20, 220, 150, 40), "Wait (3)") || Input.GetKeyDown(KeyCode.Alpha3)) {
+						Debug.Log("Wait Pressed");
+						// Tells character to add action to que
 					}
 					break;
 				case 2:

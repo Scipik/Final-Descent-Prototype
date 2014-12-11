@@ -21,12 +21,16 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	
 	public Tile onTile; // Tile unit is on
 	
-	private float movementAP; // Used to determine the speed of movment (Each grid movement is ideally .25s)
+	private ActionLinkSystem als;
+	private int unitNum; // For the queue system, refertence to their queue in the list
+	private int movementAP; // Used to determine the speed of movment (Each grid movement is ideally .25s)
+	private Tile tile; // The position of unit when moving in the que
 	private Vector3 newPosition;
 
 	// Use this for initialization
 	protected virtual void Start () {
 		setInitialUnitValues ();
+		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
 	}
 	
 	
@@ -38,6 +42,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	// Character stats are set here (Meant to be overridden)
 	public virtual void setInitialUnitValues() {
 		maxActions = 1;
+		unitNum = -1;
 	}
 	
 	
@@ -53,6 +58,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	
 	// Actor Interface
 	public virtual void activate() {
+		// unitNum = -1;
 		actionsRemaining = maxActions;
 	}
 	
@@ -69,18 +75,20 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		newPosition = moveTo.transform.position;
 		newPosition.y = newPosition.y + transform.position.y;
 		
-		print (moveTo.GetComponent<Tile>().distToSelectedUnit);
+		// print (moveTo.GetComponent<Tile>().distToSelectedUnit);
 		movementAP = moveTo.GetComponent<Tile>().distToSelectedUnit;
 		actionsRemaining -= moveTo.GetComponent<Tile>().distToSelectedUnit;
 		removeMoveableArea();
 		
-		move (moveTo.GetComponent<Tile>());
+		
+		unitNum = als.setAction(unitNum, 1, movementAP, moveTo);
+		// move (moveTo.GetComponent<Tile>());
 	}
 	
 	public virtual void move(Tile newTile) {
 		onTile.taken = null;
 		
-		StartCoroutine(MoveToPosition(newPosition, movementAP/4.0f));
+		StartCoroutine(MoveToPosition(newPosition, ((float)movementAP)/4.0f));
 		
 		onTile = newTile;
 		newTile.taken = gameObject;
@@ -97,6 +105,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 			transform.position = Vector3.Lerp(currentPosition, position, t);
 			yield return null;
 		}
+		transform.position = position;
 	}
 	
 	
