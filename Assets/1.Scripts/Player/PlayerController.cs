@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour {
 	public FieldMaster field;
 	
 	public GameObject highlightStats; // Reference to the obj we have highlighted for stat display
+	public bool interactable; // Boolean to tell us if we can interact right now (Used for enemy turn and animations
+	public CharacterSpawn heroes;
 	
 	private int guiDisplay; // int value so we know what gui's to display
 	private Characters selection;
@@ -18,13 +20,17 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
 		guiDisplay = 0;
 		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
+		// heroes = GameObject.FindGameObjectWithTag("Heroes").GetComponent<CharacterSpawn>();
+		interactable = true;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		leftClick ();
-		rightClick();
-		keyPresses();
+		if (interactable) {
+			leftClick ();
+			rightClick();
+			keyPresses();
+		}
 	}
 	
 	// Functions for left clicking (Selection or Commands)
@@ -100,8 +106,10 @@ public class PlayerController : MonoBehaviour {
 				break;
 		}
 		if (Input.GetKeyDown (KeyCode.Space) && selection != null && (guiDisplay == 0 || guiDisplay == 1)) {
-			als.excuteActions();
+			StartCoroutine(als.excuteActions());
 			guiDisplay = 0;
+			interactable = false;
+			selection = null;
 		}
 	}
 	
@@ -152,5 +160,13 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			GUI.TextField(new Rect(20, 20, 150, 20), "Nothing Selected", 25);
 		}
+	}
+	
+	public void playersTurn() {
+		interactable = true;
+		for (int i = 0; i < heroes.playerCharacters.Length; i++) {
+			heroes.playerCharacters[i].activate ();
+		}
+		print ("done");
 	}
 }

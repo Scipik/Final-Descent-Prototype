@@ -11,10 +11,11 @@ public class ActionLinkSystem : MonoBehaviour {
 
 	public List<Characters> unitsSetToMove = new List<Characters>();
 	private List<List<ActionNode>> actionSequence = new List<List<ActionNode>>();
+	private PlayerController controller;
 	
 	// Use this for initialization
 	void Start() {
-	
+		controller = GameObject.FindGameObjectWithTag("PlayerController").GetComponent<PlayerController>();
 	}
 	
 	// Update is called once per frame
@@ -68,16 +69,18 @@ public class ActionLinkSystem : MonoBehaviour {
 	
 	// Executes actions in the list using coroutines
 	// Each element of action should be .25s
-	public void excuteActions() {
+	public IEnumerator excuteActions() {
 		for (int i = 0; i < unitsSetToMove.Count; i++) {
 			for (int j = 0; j < actionSequence[i].Count; j++) {
 				if (typeof(MovementNode) == actionSequence[i][j].GetType()) {
 					Destroy (((MovementNode)actionSequence[i][j]).ghost);
 				}
 			}
-		
 			StartCoroutine(UnitAction(i));
 		}
+		yield return new WaitForSeconds(2.5f); // For prototype, max actions per turn should be 10
+		controller.playersTurn();
+		clearActions ();
 	}
 	
 	private IEnumerator UnitAction(int unit) {
@@ -93,6 +96,14 @@ public class ActionLinkSystem : MonoBehaviour {
 	
 	
 	public void clearActions() {
-	
+		for (int i = 0; i < unitsSetToMove.Count; i++) {
+			actionSequence[i].Clear ();
+		}
+		actionSequence.Clear ();
+		
+		for (int i = 0; i < unitsSetToMove.Count; i++) {
+			unitsSetToMove[i].unitNum = -1;
+		}
+		unitsSetToMove.Clear ();
 	}
 }

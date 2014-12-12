@@ -18,7 +18,7 @@ public class Berserker : Characters {
 	public override void setInitialUnitValues () {
 		base.setInitialUnitValues();
 		maxActions = 8;
-		activate ();
+		// activate ();
 	}
 	
 	public override void select() {

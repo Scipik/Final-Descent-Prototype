@@ -8,8 +8,10 @@ using System.Collections.Generic;
 public class CharacterSpawn : MonoBehaviour {
 
 	public GridSpawn grid;
+	public PlayerController controller;
 	
-	public GameObject[] heroes = new GameObject[4]; // The heroes to spawn for this battle
+	public GameObject[] heroes = new GameObject[1]; // The heroes to spawn for this battle
+	public Characters[] playerCharacters = new Characters[1]; // Reference to the heroes
 	public int [] startingX, startingY; // X and Y coordinates for the heroes staring positions
 	
 	
@@ -27,10 +29,10 @@ public class CharacterSpawn : MonoBehaviour {
 		
 		GameObject hero = Instantiate(heroes[0], newPosition, Quaternion.identity) as GameObject;
 		hero.transform.parent = transform;
-		hero.GetComponent<Characters>().onTile = temp.GetComponent<Tile>();
+		hero.GetComponent<Characters>().tile = temp.GetComponent<Tile>();
 		temp.GetComponent<Tile>().taken = hero;
-		
-		// hero.GetComponent<Characters>().activate();
+		playerCharacters[0] = hero.GetComponent<Characters>();
+		controller.playersTurn();
 	}
 	
 	// Update is called once per frame

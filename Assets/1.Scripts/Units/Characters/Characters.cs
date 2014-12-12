@@ -7,29 +7,20 @@ using UnityEngine;
 using System.Collections;
 
 public class Characters : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageable<int>, IMoveable<int, GameObject, Tile, Vector3, float>, IAttackable<GameObject, GameObject[]> {
-
+	
 	// Number of actions a character has at the start of turn
-	private int _maxActions;
-	public int maxActions {
-		get { return _maxActions; }
-		set {
-			if (value < 1) print ("Error: trying to set maxActions to less than zero");
-			else _maxActions = value;
-		}
-	}
+	public int maxActions;
 	public int actionsRemaining;
 	
-	public Tile onTile; // Tile unit is on
 	public GameObject transparentSelf;
+	public int unitNum; // For the queue system, refertence to their queue in the list
+	
+	public Tile tile; // The position of unit when moving in the que
+	private Tile targetTile;
 	
 	private Vector3 charOffSet = new Vector3(0.0f, 1.5f, 0.0f); // So capsule is on top of grid instead of in it
 	private ActionLinkSystem als;
-	private int unitNum; // For the queue system, refertence to their queue in the list
-	private int movementAP; // Used to determine the speed of movment (Each grid movement is ideally .25s)
-	private Tile tile; // The position of unit when moving in the que
-	private Vector3 newPosition;
-	private Tile targetTile;
-
+	
 	// Use this for initialization
 	protected virtual void Start () {
 		setInitialUnitValues ();
@@ -48,7 +39,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable<ActionNode>, IDam
 		
 		// Move to Activate maybe
 		unitNum = -1;
-		targetTile = onTile;
+		targetTile = tile;
 	}
 	
 	
@@ -91,20 +82,15 @@ public class Characters : MonoBehaviour, ISelectable, IActable<ActionNode>, IDam
 	
 	// Movement Interface implementation
 	public virtual void displayMoveableArea() {
-		// onTile.enroachmentStart(actionsRemaining);
 		targetTile.enroachmentStart(actionsRemaining);
 	}
 	
 	public virtual void removeMoveableArea() {
-		// onTile.deroachmentStart();
 		targetTile.deroachmentStart();
 	}
 	
 	public virtual void setMove(GameObject moveTo) {
-		newPosition = moveTo.transform.position + charOffSet;
-		
-		// print (moveTo.GetComponent<Tile>().distToSelectedUnit);
-		movementAP = moveTo.GetComponent<Tile>().distToSelectedUnit;
+		int movementAP = moveTo.GetComponent<Tile>().distToSelectedUnit;
 		actionsRemaining -= moveTo.GetComponent<Tile>().distToSelectedUnit;
 		removeMoveableArea();
 		
@@ -114,14 +100,13 @@ public class Characters : MonoBehaviour, ISelectable, IActable<ActionNode>, IDam
 		unitNum = als.setAction(gameObject.GetComponent<Characters>(), unitNum, movementAP, targetTile, moveTo.GetComponent<Tile>(), ghost);
 		
 		targetTile = moveTo.GetComponent<Tile>();
-		// move (moveTo.GetComponent<Tile>());
 	}
 	
 	public virtual void move(Tile fromTile, Tile toTile, int apCost) {
 		fromTile.taken = null;
 		
 		StartCoroutine(MoveToPosition(fromTile.gameObject.transform.position + charOffSet,
-				toTile.gameObject.transform.position + charOffSet, ((float)apCost)/4.0f));
+		                              toTile.gameObject.transform.position + charOffSet, ((float)apCost)/4.0f));
 		
 		fromTile = toTile;
 		toTile.taken = gameObject;
