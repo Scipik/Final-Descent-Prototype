@@ -143,7 +143,9 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 	
 	// Damage Interface implementation
 	public virtual void takeDamage(int damage) {
-		print ("I'm hit!");
+		health -= damage;
+		if (health < 0)
+			onDeath ();
 	}
 	
 	public virtual void healDamage(int heal) {
@@ -152,5 +154,6 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 	
 	public virtual void onDeath() {
 		print ("Bye bye cruel world...");
+		Destroy (gameObject);
 	}
 }

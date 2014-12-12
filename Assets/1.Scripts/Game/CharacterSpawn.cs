@@ -11,8 +11,11 @@ public class CharacterSpawn : MonoBehaviour {
 	public PlayerController controller;
 	
 	public GameObject[] heroes = new GameObject[2]; // The heroes to spawn for this battle
+	public GameObject enemy; // Enemies that spawn for this battle
 	public Characters[] playerCharacters = new Characters[2]; // Reference to the heroes
-	public int [] startingX, startingY; // X and Y coordinates for the heroes staring positions
+	public Enemies[] enemies = new Enemies[3]; // reference to enemies
+	public int[] startingX, startingY; // X and Y coordinates for the heroes staring positions
+	public int[] enemyX, enemyY;
 	
 	
 	void Awake() {
@@ -24,7 +27,7 @@ public class CharacterSpawn : MonoBehaviour {
 		GameObject temp;
 		Vector3 newPosition;
 		
-		// Initiate our heroes
+		// Instantiate our heroes
 		for (int i = 0; i < heroes.Length; i++) {
 			temp = grid.gridColumns[startingX[i]][startingY[i]];
 			
@@ -37,7 +40,20 @@ public class CharacterSpawn : MonoBehaviour {
 			temp.GetComponent<Tile>().taken = hero;
 			playerCharacters[i] = hero.GetComponent<Characters>();
 		}
-		// transform.position = newPosition;
+		
+		// Instantiate enemies
+		for (int i = 0; i < 3; i++) {
+			temp = grid.gridColumns[enemyX[i]][enemyY[i]];
+			
+			newPosition = temp.transform.position;
+			newPosition.y = newPosition.y + enemy.transform.position.y;
+			
+			GameObject ene = Instantiate(enemy, newPosition, Quaternion.identity) as GameObject;
+			ene.transform.parent = transform;
+			ene.GetComponent<Enemies>().tile = temp.GetComponent<Tile>();
+			temp.GetComponent<Tile>().taken = ene;
+			enemies[i] = ene.GetComponent<Enemies>();
+		}
 		
 		controller.playersTurn();
 	}
