@@ -10,8 +10,8 @@ public class CharacterSpawn : MonoBehaviour {
 	public GridSpawn grid;
 	public PlayerController controller;
 	
-	public GameObject[] heroes = new GameObject[1]; // The heroes to spawn for this battle
-	public Characters[] playerCharacters = new Characters[1]; // Reference to the heroes
+	public GameObject[] heroes = new GameObject[2]; // The heroes to spawn for this battle
+	public Characters[] playerCharacters = new Characters[2]; // Reference to the heroes
 	public int [] startingX, startingY; // X and Y coordinates for the heroes staring positions
 	
 	
@@ -21,17 +21,24 @@ public class CharacterSpawn : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		GameObject temp = grid.gridColumns[startingX[0]][startingY[0]];
+		GameObject temp;
+		Vector3 newPosition;
 		
-		Vector3 newPosition = temp.transform.position;
-		newPosition.y = newPosition.y + heroes[0].transform.position.y;
-		transform.position = newPosition;
+		// Initiate our heroes
+		for (int i = 0; i < heroes.Length; i++) {
+			temp = grid.gridColumns[startingX[i]][startingY[i]];
+			
+			newPosition = temp.transform.position;
+			newPosition.y = newPosition.y + heroes[i].transform.position.y;
+			
+			GameObject hero = Instantiate(heroes[i], newPosition, Quaternion.identity) as GameObject;
+			hero.transform.parent = transform;
+			hero.GetComponent<Characters>().tile = temp.GetComponent<Tile>();
+			temp.GetComponent<Tile>().taken = hero;
+			playerCharacters[i] = hero.GetComponent<Characters>();
+		}
+		// transform.position = newPosition;
 		
-		GameObject hero = Instantiate(heroes[0], newPosition, Quaternion.identity) as GameObject;
-		hero.transform.parent = transform;
-		hero.GetComponent<Characters>().tile = temp.GetComponent<Tile>();
-		temp.GetComponent<Tile>().taken = hero;
-		playerCharacters[0] = hero.GetComponent<Characters>();
 		controller.playersTurn();
 	}
 	

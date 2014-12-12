@@ -16,6 +16,9 @@ public class Tile : MonoBehaviour {
 	
 	public GameObject[] neighbors; // Tiles adjacent to this tile
 	
+	private int tileNum; // Number for the position in the tile history queue
+	private ActionLinkSystem als;
+	
 	private Color baseColor;
 
 	void Awake() {
@@ -26,7 +29,8 @@ public class Tile : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
+		tileNum = -1;
 	}
 	
 	// Update is called once per frame

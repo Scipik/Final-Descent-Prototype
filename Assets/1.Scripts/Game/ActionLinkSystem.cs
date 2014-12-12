@@ -78,7 +78,7 @@ public class ActionLinkSystem : MonoBehaviour {
 			}
 			StartCoroutine(UnitAction(i));
 		}
-		yield return new WaitForSeconds(2.5f); // For prototype, max actions per turn should be 10
+		yield return new WaitForSeconds(3.0f); // For prototype, max actions per turn should be 10
 		controller.playersTurn();
 		clearActions ();
 	}
@@ -105,5 +105,6 @@ public class ActionLinkSystem : MonoBehaviour {
 			unitsSetToMove[i].unitNum = -1;
 		}
 		unitsSetToMove.Clear ();
+		print ("Cleared");
 	}
 }

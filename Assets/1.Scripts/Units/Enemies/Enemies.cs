@@ -1,9 +1,10 @@
-﻿// Berserker 
+﻿// Character class
+// Base class that our enemies will inherit from
 
 using UnityEngine;
 using System.Collections;
 
-public class Berserker : Characters {
+public class Enemies : Units {
 
 	// Use this for initialization
 	protected override void Start () {
@@ -17,11 +18,9 @@ public class Berserker : Characters {
 	
 	public override void setInitialUnitValues () {
 		base.setInitialUnitValues();
-		maxActions = 8;
-		// activate ();
 	}
 	
 	public override void select() {
-		print ("Berserker");
+		print ("Enemy");
 	}
 }

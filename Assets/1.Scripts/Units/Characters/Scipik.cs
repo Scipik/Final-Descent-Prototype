@@ -1,11 +1,10 @@
-﻿// Character class
-// Base class that our heroes will inherit from
+﻿// Scipik 
 
 using UnityEngine;
 using System.Collections;
 
-public class Characters : Units {
-	
+public class Scipik : Characters {
+
 	// Use this for initialization
 	protected override void Start () {
 		base.Start ();
@@ -18,9 +17,12 @@ public class Characters : Units {
 	
 	public override void setInitialUnitValues () {
 		base.setInitialUnitValues();
+		maxActions = 6;
+		maxHealth = 50;
+		health = maxHealth;
 	}
 	
 	public override void select() {
-		print ("Character");
+		print ("Scipik");
 	}
 }
