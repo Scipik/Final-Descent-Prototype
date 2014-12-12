@@ -4,11 +4,16 @@
 using UnityEngine;
 using System.Collections;
 
-public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageable<int>, IMoveable<int, GameObject, Tile, Vector3, float>, IAttackable<GameObject, GameObject[]> {
+public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageable<int>, IMoveable<int, GameObject, Tile, Vector3, float>, IAttackable<Tile, Units> {
 	
 	// Life Stats
 	protected int maxHealth;
 	public int health;
+	
+	// Attack Stats
+	public int atkPow;
+	public int atkCost;
+	protected int atkRange;
 	
 	// Number of actions a character has at the start of turn
 	public int maxActions;
@@ -23,9 +28,12 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 	protected Vector3 charOffSet = new Vector3(0.0f, 1.5f, 0.0f); // So capsule is on top of grid instead of in it
 	protected ActionLinkSystem als;
 	
+	protected virtual void Awake() {
+		setInitialUnitValues ();
+	}
+	
 	// Use this for initialization
 	protected virtual void Start () {
-		setInitialUnitValues ();
 		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
 	}
 	
@@ -38,30 +46,33 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 	// Character stats are set here (Meant to be overridden)
 	public virtual void setInitialUnitValues() {
 		maxActions = 1;
+		
 		maxHealth = 10;
 		health = maxHealth;
 		
+		atkPow = 1;
+		atkCost = 1;
+		atkRange = 1;
+		
 		// Move to Activate maybe
 		unitNum = -1;
-		targetTile = tile;
 	}
 	
 	
 	// Select Interface implementation
 	public virtual void select() {
-		print ("Selected");
 	}
 	
 	public virtual void deSelect() {
-		print ("Deselected");
 	}
 	
 	
 	// Actor Interface
 	public virtual void activate() {
 		// unitNum = -1;
+		targetTile = tile;
 		actionsRemaining = maxActions;
-		print(actionsRemaining);
+		print (actionsRemaining);
 	}
 	
 	// Removes last action from queue and returns the action points
@@ -73,6 +84,8 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 				targetTile = mTemp.initialPosition;
 				Destroy(mTemp.ghost);
 				actionsRemaining += mTemp.apCost;
+			} else if (typeof(AttackNode) == temp.GetType()) {
+				actionsRemaining += atkCost;
 			}
 		}
 	}
@@ -82,6 +95,11 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 		if (typeof(MovementNode) == action.GetType()) {
 			MovementNode temp = (MovementNode) action;
 			move (temp.initialPosition, temp.targetPosition, temp.apCost);
+		} else if (typeof(AttackNode) == action.GetType()) {
+			AttackNode temp = (AttackNode) action;
+			if (temp.target != null) {
+				attack (temp.target.taken.GetComponent<Units>());
+			}
 		}
 	}
 	
@@ -103,7 +121,7 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 		ghost.transform.parent = transform.parent;
 		moveTo.GetComponent<Tile>().taken = gameObject;
 		
-		unitNum = als.setAction(gameObject.GetComponent<Characters>(), unitNum, movementAP, targetTile, moveTo.GetComponent<Tile>(), ghost);
+		unitNum = als.setAction(gameObject.GetComponent<Units>(), unitNum, movementAP, targetTile, moveTo.GetComponent<Tile>(), ghost);
 		
 		targetTile = moveTo.GetComponent<Tile>();
 	}
@@ -114,7 +132,7 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 		StartCoroutine(MoveToPosition(fromTile.gameObject.transform.position + charOffSet,
 		                              toTile.gameObject.transform.position + charOffSet, ((float)apCost)/4.0f));
 		
-		fromTile = toTile;
+		tile = toTile;
 		toTile.taken = gameObject;
 	}
 	
@@ -132,14 +150,30 @@ public class Units : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageab
 	
 	
 	// Attack Interface implementation
-	public virtual void attack(GameObject obj) {
-		print ("Attack!");
+	public virtual bool displayAttackableUnits() {
+		return targetTile.atkEnroachmentStart(atkRange);
 	}
 	
-	public virtual void specialAttack(GameObject[] obj) {
-		print ("I need more than just 1 special!");
+	public virtual void removeAttackableUnits() {
+		targetTile.atkDeroachmentStart(atkRange);
+	}
+
+	public virtual void setAttack(Tile tile) {
+		actionsRemaining -= atkCost;
+		removeAttackableUnits();
+		
+		unitNum = als.setAction(gameObject.GetComponent<Units>(), unitNum, atkCost, tile);
+	}
+
+	public virtual void attack(Units target) {
+		StartCoroutine(AttackUnit(target));
 	}
 	
+	// This was copied over from moveable, may not actually be neccessary for a basic attack
+	public virtual IEnumerator AttackUnit(Units target) {
+		target.takeDamage(atkPow);
+		yield return new WaitForSeconds(0.25f);
+	}
 	
 	// Damage Interface implementation
 	public virtual void takeDamage(int damage) {

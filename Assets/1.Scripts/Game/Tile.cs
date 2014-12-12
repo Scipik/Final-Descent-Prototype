@@ -16,9 +16,6 @@ public class Tile : MonoBehaviour {
 	
 	public GameObject[] neighbors; // Tiles adjacent to this tile
 	
-	private int tileNum; // Number for the position in the tile history queue
-	private ActionLinkSystem als;
-	
 	private Color baseColor;
 
 	void Awake() {
@@ -29,8 +26,6 @@ public class Tile : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
-		tileNum = -1;
 	}
 	
 	// Update is called once per frame
@@ -38,7 +33,7 @@ public class Tile : MonoBehaviour {
 	
 	}
 	
-	// Methods used to highlight moveable/attackable area
+	// Methods used to highlight moveable area
 	// This is called where the unit is
 	public void enroachmentStart(int step) {
 		if (step > 0) {
@@ -115,6 +110,79 @@ public class Tile : MonoBehaviour {
 		}
 	}
 			
+	
+	
+	// Methods used to highlight attackable area
+	// This is called where the unit is
+	public bool atkEnroachmentStart(int step) {
+		bool foundTarget = false;
+		if (step > 0) {
+			Tile temp;
+			
+			foreach (GameObject nei in neighbors) {
+				if (nei == null) continue;
+				
+				temp = nei.GetComponent<Tile>();
+				if (temp.atkEnroach(step)) {
+					foundTarget = true;
+				}
+			}
+		}
+		return foundTarget;
+	}
+	
+	// Used to expand the atk area from initial
+	public bool atkEnroach(int step) {
+		bool foundTarget = false;
+	
+		if (taken) {
+			highlighted = true; // This tells us
+			renderer.material.color = Color.green;
+			foundTarget = true;
+		}
+		step--;
+		
+		if (step > 0) {
+			Tile temp;
+			
+			foreach (GameObject nei in neighbors) {
+				if (nei == null) continue;
+				
+				temp = nei.GetComponent<Tile>();
+				if (temp.atkEnroach(step)) {
+					foundTarget = true;
+				}
+			}
+		}
+		return foundTarget;
+	}
+	
+	// Removes atk highlight starting with units initial position
+	public void atkDeroachmentStart(int step) {
+		foreach (GameObject nei in neighbors) {
+			if (nei == null) continue;
+			
+			nei.GetComponent<Tile>().atkDeroach(step);
+		}
+	}
+	
+	// Used to remove the expanded area from initial;
+	public void atkDeroach(int step) {
+		highlighted = false;
+		renderer.material.color = baseColor;
+		
+		step--;
+		if (step > 0) {
+			foreach (GameObject nei in neighbors) {
+				if (nei == null) continue;
+			
+				nei.GetComponent<Tile>().atkDeroach(step);
+			}
+		}
+	}
+	
+	
+	
 	
 	
 	void OnMouseOver() {

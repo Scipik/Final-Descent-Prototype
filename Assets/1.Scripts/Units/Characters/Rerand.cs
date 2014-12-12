@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GenericEnemy : Enemies {
+public class Rerand : Characters {
+
+	protected override void Awake () {
+		base.Awake ();
+	}
 
 	// Use this for initialization
 	protected override void Start () {
@@ -15,14 +19,14 @@ public class GenericEnemy : Enemies {
 	
 	public override void setInitialUnitValues () {
 		base.setInitialUnitValues();
-		maxActions = 7;
+		maxActions = 8;
 		
-		maxHealth = 40;
+		maxHealth = 30;
 		health = maxHealth;
 		
 		atkPow = 4;
 		atkCost = 3;
-		atkRange = 1;
+		atkRange = 4;
 	}
 	
 	public override void select() {

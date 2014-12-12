@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 public class ActionLinkSystem : MonoBehaviour {
 
-	public List<Characters> unitsSetToMove = new List<Characters>();
+	public List<Units> unitsSetToMove = new List<Units>();
 	private List<List<ActionNode>> actionSequence = new List<List<ActionNode>>();
 	private PlayerController controller;
 	
@@ -27,7 +27,7 @@ public class ActionLinkSystem : MonoBehaviour {
 	// Called by a unit to set their action node
 	// Creates a unitNum for them if -1 and returns it
 	// else if just return it normally
-	public int setAction(Characters unit, int unitNum, int apCost, Tile initialPosition, Tile targetPosition, GameObject ghost) {
+	public int setAction(Units unit, int unitNum, int apCost, Tile initialPosition, Tile targetPosition, GameObject ghost) {
 		if (unitNum == -1) {
 			List<ActionNode> newUnitActions = new List<ActionNode>();
 			unitNum = actionSequence.Count;
@@ -43,6 +43,24 @@ public class ActionLinkSystem : MonoBehaviour {
 			actionSequence[unitNum].Add (blankAction);
 		}
 		
+		return unitNum;
+	}
+	
+	public int setAction(Units unit, int unitNum, int apCost, Tile target) {
+		if (unitNum == -1) {
+			List<ActionNode> newUnitActions = new List<ActionNode>();
+			unitNum = actionSequence.Count;
+			actionSequence.Add(newUnitActions);
+			unitsSetToMove.Add (unit);
+		}
+		
+		// Sets initial actionNode, then fills in the number of action with empty nodes as needed
+		AttackNode newAction = new AttackNode(true, apCost, target);
+		actionSequence[unitNum].Add (newAction);
+		for (int i = 0; i < apCost - 1; i++) {
+			AttackNode blankAction = new AttackNode(false, 0, target);
+			actionSequence[unitNum].Add (blankAction);
+		}
 		
 		return unitNum;
 	}
@@ -79,7 +97,7 @@ public class ActionLinkSystem : MonoBehaviour {
 			StartCoroutine(UnitAction(i));
 		}
 		yield return new WaitForSeconds(3.0f); // For prototype, max actions per turn should be 10
-		controller.playersTurn();
+		controller.switchTurn();
 		clearActions ();
 	}
 	
@@ -105,6 +123,5 @@ public class ActionLinkSystem : MonoBehaviour {
 			unitsSetToMove[i].unitNum = -1;
 		}
 		unitsSetToMove.Clear ();
-		print ("Cleared");
 	}
 }

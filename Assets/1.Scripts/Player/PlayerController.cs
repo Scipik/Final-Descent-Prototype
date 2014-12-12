@@ -6,6 +6,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
+	public int turn;
 	public FieldMaster field;
 	
 	public GameObject highlightStats; // Reference to the obj we have highlighted for stat display
@@ -13,7 +14,7 @@ public class PlayerController : MonoBehaviour {
 	public CharacterSpawn heroes;
 	
 	private int guiDisplay; // int value so we know what gui's to display
-	private Characters selection;
+	private Units selection;
 	private ActionLinkSystem als;
 
 	// Use this for initialization
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour {
 		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
 		// heroes = GameObject.FindGameObjectWithTag("Heroes").GetComponent<CharacterSpawn>();
 		interactable = true;
+		turn = 0;
 	}
 	
 	// Update is called once per frame
@@ -40,8 +42,12 @@ public class PlayerController : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit)) {
 				if (selection == null) {
-					if (hit.collider.gameObject.tag == "Character") {
+					if (hit.collider.gameObject.tag == "Character" && turn%2 == 1) {
 						selection = hit.collider.gameObject.GetComponent<Characters>();
+						selection.select ();
+						guiDisplay = 1;
+					} else if (hit.collider.gameObject.tag == "Enemy" && turn%2 == 0) {
+						selection = hit.collider.gameObject.GetComponent<Enemies>();
 						selection.select ();
 						guiDisplay = 1;
 					}
@@ -49,6 +55,12 @@ public class PlayerController : MonoBehaviour {
 					if (guiDisplay == 2 && hit.collider.gameObject.tag == "Tile") {
 						if (hit.collider.gameObject.GetComponent<Tile>().highlighted) {
 							selection.setMove(hit.collider.gameObject);
+							guiDisplay = 1;
+						}
+					}
+					if (guiDisplay == 4 && hit.collider.gameObject.tag == "Tile") {
+						if (hit.collider.gameObject.GetComponent<Tile>().highlighted) {
+							selection.setAttack(hit.collider.gameObject.GetComponent<Tile>());
 							guiDisplay = 1;
 						}
 					}
@@ -69,10 +81,14 @@ public class PlayerController : MonoBehaviour {
 						break;
 					case 2: // Movement menu
 						guiDisplay = 1;
-						selection.GetComponent<Characters>().removeMoveableArea();
+						selection.GetComponent<Units>().removeMoveableArea();
 						break;
 					case 3: // Attack Menu
 						guiDisplay = 1;
+						break;
+					case 4:
+						selection.removeAttackableUnits();
+						guiDisplay = 3;
 						break;
 					default:
 						break;
@@ -89,7 +105,6 @@ public class PlayerController : MonoBehaviour {
 					guiDisplay = 2;
 				}
 				if (Input.GetKeyDown(KeyCode.Alpha2)) {
-					Debug.Log("Attack Pressed");
 					guiDisplay = 3;
 				}
 				if (Input.GetKeyDown(KeyCode.Alpha3)) {
@@ -102,6 +117,14 @@ public class PlayerController : MonoBehaviour {
 				break;
 			case 2:
 			case 3:
+				if (Input.GetKeyDown(KeyCode.Alpha1) && selection.actionsRemaining >= selection.atkCost) {
+					if (selection.displayAttackableUnits()) {
+						guiDisplay = 4;
+					} else {
+						print("No attackable units in range");
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -126,7 +149,6 @@ public class PlayerController : MonoBehaviour {
 						guiDisplay = 2;
 					}
 					if (GUI.Button(new Rect(20, 160, 150, 40), "Attack (2)")) {
-						Debug.Log("Attack Pressed");
 						guiDisplay = 3;
 					}
 					if (GUI.Button(new Rect(20, 220, 150, 40), "Wait (3)")) {
@@ -145,13 +167,12 @@ public class PlayerController : MonoBehaviour {
 						GUI.TextField(new Rect(20, 100, 150, 20), "AP Cost: " + highlightStats.GetComponent<Tile>().distToSelectedUnit, 25);
 					break;
 				case 3: // Attack actions
-					if (GUI.Button(new Rect(20, 100, 150, 40), "Normal Attack")) {
-						Debug.Log("Normal attack");
-						guiDisplay = 0;
-					}
-					if (GUI.Button(new Rect(20, 160, 150, 40), "Skills?")) {
-						Debug.Log("Special Powa");
-						guiDisplay = 0;
+				if (GUI.Button(new Rect(20, 100, 150, 40), "Normal Attack: " + selection.atkCost + "AP (1)") && selection.actionsRemaining >= selection.atkCost) {
+						if (selection.displayAttackableUnits()) {
+							guiDisplay = 4;
+						} else {
+							print("No attackable units in range");
+						}
 					}
 					break;
 				default:
@@ -162,11 +183,28 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
+	public void switchTurn() {
+		turn++;
+		if (turn%2 == 1) {
+			playersTurn ();
+		} else {
+			enemiesTurn();
+		}
+	}
+	
 	public void playersTurn() {
 		interactable = true;
 		for (int i = 0; i < heroes.playerCharacters.Length; i++) {
 			heroes.playerCharacters[i].activate ();
 		}
-		print ("done");
+		print ("Player Turn");
+	}
+	
+	public void enemiesTurn() {
+		interactable = true;
+		for (int i = 0; i < heroes.enemies.Length; i++) {
+			heroes.enemies[i].activate ();
+		}
+		print ("Enemies Turn");
 	}
 }

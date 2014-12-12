@@ -6,6 +6,10 @@ using System.Collections;
 
 public class Characters : Units {
 	
+	protected override void Awake () {
+		base.Awake ();
+	}
+	
 	// Use this for initialization
 	protected override void Start () {
 		base.Start ();

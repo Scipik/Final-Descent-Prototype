@@ -24,3 +24,11 @@ public class MovementNode : ActionNode {
 		this.ghost = g;
 	}
 }
+
+public class AttackNode : ActionNode {
+	public Tile target; // Tile that the targe occupies
+	
+	public AttackNode(bool aS, int apC, Tile t) : base (aS, apC) {
+		this.target = t;
+	}
+}

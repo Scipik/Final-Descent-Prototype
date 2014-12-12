@@ -10,9 +10,9 @@ public class CharacterSpawn : MonoBehaviour {
 	public GridSpawn grid;
 	public PlayerController controller;
 	
-	public GameObject[] heroes = new GameObject[2]; // The heroes to spawn for this battle
+	public GameObject[] heroes = new GameObject[4]; // The heroes to spawn for this battle
 	public GameObject enemy; // Enemies that spawn for this battle
-	public Characters[] playerCharacters = new Characters[2]; // Reference to the heroes
+	public Characters[] playerCharacters = new Characters[4]; // Reference to the heroes
 	public Enemies[] enemies = new Enemies[3]; // reference to enemies
 	public int[] startingX, startingY; // X and Y coordinates for the heroes staring positions
 	public int[] enemyX, enemyY;
@@ -55,7 +55,7 @@ public class CharacterSpawn : MonoBehaviour {
 			enemies[i] = ene.GetComponent<Enemies>();
 		}
 		
-		controller.playersTurn();
+		controller.switchTurn();
 	}
 	
 	// Update is called once per frame
