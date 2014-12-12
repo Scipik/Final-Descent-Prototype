@@ -16,11 +16,11 @@ public class ActionNode {
 public class MovementNode : ActionNode {
 	public Tile initialPosition; // Position when  (for movement and some attacks)
 	public Tile targetPosition; // The target of action is applicable
+	public GameObject ghost; // Transparent character to show player the new position
 	
-	public MovementNode(bool aS, int apC, Tile iP, Tile tP) : base (aS, apC) {
-		// this.actionStart = aS;
-		// this.apCost = apC;
+	public MovementNode(bool aS, int apC, Tile iP, Tile tP, GameObject g) : base (aS, apC) {
 		this.initialPosition = iP;
 		this.targetPosition = tP;
+		this.ghost = g;
 	}
 }

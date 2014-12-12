@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour {
 	private void keyPresses() {
 		switch (guiDisplay) {
 			case 1: // Basic Character actions
-				if (Input.GetKeyDown(KeyCode.Alpha1)) {
+				if (Input.GetKeyDown(KeyCode.Alpha1) && selection.actionsRemaining > 0) {
 					selection.displayMoveableArea();
 					guiDisplay = 2;
 				}
@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour {
 			
 			switch (guiDisplay) {
 				case 1: // Basic Character actions
-					if (GUI.Button(new Rect(20, 100, 150, 40), "Move (1)")) {
+					if (GUI.Button(new Rect(20, 100, 150, 40), "Move (1)") && selection.actionsRemaining > 0) {
 						selection.displayMoveableArea();
 						guiDisplay = 2;
 					}

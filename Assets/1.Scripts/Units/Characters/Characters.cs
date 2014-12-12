@@ -20,12 +20,15 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	public int actionsRemaining;
 	
 	public Tile onTile; // Tile unit is on
+	public GameObject transparentSelf;
 	
+	private Vector3 charOffSet = new Vector3(0.0f, 1.5f, 0.0f); // So capsule is on top of grid instead of in it
 	private ActionLinkSystem als;
 	private int unitNum; // For the queue system, refertence to their queue in the list
 	private int movementAP; // Used to determine the speed of movment (Each grid movement is ideally .25s)
 	private Tile tile; // The position of unit when moving in the que
 	private Vector3 newPosition;
+	private Tile targetTile;
 
 	// Use this for initialization
 	protected virtual void Start () {
@@ -42,7 +45,10 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 	// Character stats are set here (Meant to be overridden)
 	public virtual void setInitialUnitValues() {
 		maxActions = 1;
+		
+		// Move to Activate maybe
 		unitNum = -1;
+		targetTile = onTile;
 	}
 	
 	
@@ -66,30 +72,39 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		ActionNode temp = als.cancelLastAction(unitNum);
 		if (temp != null) {
 			if (typeof(MovementNode) == temp.GetType()) {
-				print ("Is movement");
+				MovementNode mTemp = (MovementNode)temp;
+				targetTile = mTemp.initialPosition;
+				Destroy(mTemp.ghost);
+				actionsRemaining += mTemp.apCost;
 			}
 		}
 	}
 	
 	// Movement Interface implementation
 	public virtual void displayMoveableArea() {
-		onTile.enroachmentStart(actionsRemaining);
+		// onTile.enroachmentStart(actionsRemaining);
+		targetTile.enroachmentStart(actionsRemaining);
 	}
 	
 	public virtual void removeMoveableArea() {
-		onTile.deroachmentStart();
+		// onTile.deroachmentStart();
+		targetTile.deroachmentStart();
 	}
 	
 	public virtual void setMove(GameObject moveTo) {
-		newPosition = moveTo.transform.position;
-		newPosition.y = newPosition.y + transform.position.y;
+		newPosition = moveTo.transform.position + charOffSet;
 		
 		// print (moveTo.GetComponent<Tile>().distToSelectedUnit);
 		movementAP = moveTo.GetComponent<Tile>().distToSelectedUnit;
 		actionsRemaining -= moveTo.GetComponent<Tile>().distToSelectedUnit;
 		removeMoveableArea();
 		
-		unitNum = als.setAction(unitNum, movementAP, onTile, moveTo.GetComponent<Tile>());
+		GameObject ghost = Instantiate(transparentSelf, moveTo.GetComponent<Tile>().transform.position + charOffSet, Quaternion.identity) as GameObject;
+		ghost.transform.parent = transform;
+		
+		unitNum = als.setAction(unitNum, movementAP, targetTile, moveTo.GetComponent<Tile>(), ghost);
+		
+		targetTile = moveTo.GetComponent<Tile>();
 		// move (moveTo.GetComponent<Tile>());
 	}
 	

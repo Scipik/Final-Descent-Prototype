@@ -25,7 +25,7 @@ public class ActionLinkSystem : MonoBehaviour {
 	// Called by a unit to set their action node
 	// Creates a unitNum for them if -1 and returns it
 	// else if just return it normally
-	public int setAction(int unitNum, int apCost, Tile initialPosition, Tile targetPosition) {
+	public int setAction(int unitNum, int apCost, Tile initialPosition, Tile targetPosition, GameObject ghost) {
 		if (unitNum == -1) {
 			List<ActionNode> newUnitActions = new List<ActionNode>();
 			unitNum = actionSequence.Count;
@@ -33,10 +33,10 @@ public class ActionLinkSystem : MonoBehaviour {
 		}
 		
 		// Sets initial actionNode, then fills in the number of action with empty nodes as needed
-		MovementNode newAction = new MovementNode(true, apCost, initialPosition, targetPosition);
+		MovementNode newAction = new MovementNode(true, apCost, initialPosition, targetPosition, ghost);
 		actionSequence[unitNum].Add (newAction);
 		for (int i = 0; i < apCost - 1; i++) {
-			MovementNode blankAction = new MovementNode(false, 0, initialPosition, targetPosition);
+			MovementNode blankAction = new MovementNode(false, 0, initialPosition, targetPosition, ghost);
 			actionSequence[unitNum].Add (blankAction);
 		}
 		
