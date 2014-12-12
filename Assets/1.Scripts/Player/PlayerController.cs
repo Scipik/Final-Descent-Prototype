@@ -12,10 +12,12 @@ public class PlayerController : MonoBehaviour {
 	
 	private int guiDisplay; // int value so we know what gui's to display
 	private Characters selection;
+	private ActionLinkSystem als;
 
 	// Use this for initialization
 	void Start () {
 		guiDisplay = 0;
+		als = GameObject.FindGameObjectWithTag("ActionLink").GetComponent<ActionLinkSystem>();
 	}
 	
 	// Update is called once per frame
@@ -98,7 +100,8 @@ public class PlayerController : MonoBehaviour {
 				break;
 		}
 		if (Input.GetKeyDown (KeyCode.Space) && selection != null && (guiDisplay == 0 || guiDisplay == 1)) {
-			// selection.activate();
+			als.excuteActions();
+			guiDisplay = 0;
 		}
 	}
 	

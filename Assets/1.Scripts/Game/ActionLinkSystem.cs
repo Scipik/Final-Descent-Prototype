@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 public class ActionLinkSystem : MonoBehaviour {
 
+	public List<Characters> unitsSetToMove = new List<Characters>();
 	private List<List<ActionNode>> actionSequence = new List<List<ActionNode>>();
 	
 	// Use this for initialization
@@ -25,11 +26,12 @@ public class ActionLinkSystem : MonoBehaviour {
 	// Called by a unit to set their action node
 	// Creates a unitNum for them if -1 and returns it
 	// else if just return it normally
-	public int setAction(int unitNum, int apCost, Tile initialPosition, Tile targetPosition, GameObject ghost) {
+	public int setAction(Characters unit, int unitNum, int apCost, Tile initialPosition, Tile targetPosition, GameObject ghost) {
 		if (unitNum == -1) {
 			List<ActionNode> newUnitActions = new List<ActionNode>();
 			unitNum = actionSequence.Count;
 			actionSequence.Add(newUnitActions);
+			unitsSetToMove.Add (unit);
 		}
 		
 		// Sets initial actionNode, then fills in the number of action with empty nodes as needed
@@ -63,9 +65,32 @@ public class ActionLinkSystem : MonoBehaviour {
 		return temp;
 	}
 	
-	public void excuteActions() {
 	
+	// Executes actions in the list using coroutines
+	// Each element of action should be .25s
+	public void excuteActions() {
+		for (int i = 0; i < unitsSetToMove.Count; i++) {
+			for (int j = 0; j < actionSequence[i].Count; j++) {
+				if (typeof(MovementNode) == actionSequence[i][j].GetType()) {
+					Destroy (((MovementNode)actionSequence[i][j]).ghost);
+				}
+			}
+		
+			StartCoroutine(UnitAction(i));
+		}
 	}
+	
+	private IEnumerator UnitAction(int unit) {
+		ActionNode temp;
+		for (int i = 0; i < actionSequence[unit].Count; i++) {
+			temp = actionSequence[unit][i];
+			if (temp.actionStart) { // Skip over blank actions that are used for spacing
+				unitsSetToMove[unit].doAction (actionSequence[unit][i]);
+			}
+			yield return new WaitForSeconds(0.25f);
+		}
+	}
+	
 	
 	public void clearActions() {
 	

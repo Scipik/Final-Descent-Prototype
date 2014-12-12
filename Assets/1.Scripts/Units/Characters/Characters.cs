@@ -6,7 +6,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>, IMoveable<GameObject, Tile, Vector3, float>, IAttackable<GameObject, GameObject[]> {
+public class Characters : MonoBehaviour, ISelectable, IActable<ActionNode>, IDamageable<int>, IMoveable<int, GameObject, Tile, Vector3, float>, IAttackable<GameObject, GameObject[]> {
 
 	// Number of actions a character has at the start of turn
 	private int _maxActions;
@@ -68,6 +68,7 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		actionsRemaining = maxActions;
 	}
 	
+	// Removes last action from queue and returns the action points
 	public virtual void cancelAction() {
 		ActionNode temp = als.cancelLastAction(unitNum);
 		if (temp != null) {
@@ -77,6 +78,14 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 				Destroy(mTemp.ghost);
 				actionsRemaining += mTemp.apCost;
 			}
+		}
+	}
+	
+	// Executes action depicted by the given actioNode
+	public virtual void doAction(ActionNode action) {
+		if (typeof(MovementNode) == action.GetType()) {
+			MovementNode temp = (MovementNode) action;
+			move (temp.initialPosition, temp.targetPosition, temp.apCost);
 		}
 	}
 	
@@ -100,35 +109,34 @@ public class Characters : MonoBehaviour, ISelectable, IActable, IDamageable<int>
 		removeMoveableArea();
 		
 		GameObject ghost = Instantiate(transparentSelf, moveTo.GetComponent<Tile>().transform.position + charOffSet, Quaternion.identity) as GameObject;
-		ghost.transform.parent = transform;
+		ghost.transform.parent = transform.parent;
 		
-		unitNum = als.setAction(unitNum, movementAP, targetTile, moveTo.GetComponent<Tile>(), ghost);
+		unitNum = als.setAction(gameObject.GetComponent<Characters>(), unitNum, movementAP, targetTile, moveTo.GetComponent<Tile>(), ghost);
 		
 		targetTile = moveTo.GetComponent<Tile>();
 		// move (moveTo.GetComponent<Tile>());
 	}
 	
-	public virtual void move(Tile newTile) {
-		onTile.taken = null;
+	public virtual void move(Tile fromTile, Tile toTile, int apCost) {
+		fromTile.taken = null;
 		
-		StartCoroutine(MoveToPosition(newPosition, ((float)movementAP)/4.0f));
+		StartCoroutine(MoveToPosition(fromTile.gameObject.transform.position + charOffSet,
+				toTile.gameObject.transform.position + charOffSet, ((float)apCost)/4.0f));
 		
-		onTile = newTile;
-		newTile.taken = gameObject;
+		fromTile = toTile;
+		toTile.taken = gameObject;
 	}
 	
 	
 	// Movement coroutine, smooth movement
-	public virtual IEnumerator MoveToPosition(Vector3 position, float timeToMove) {
-		Vector3 currentPosition = transform.position;
-		
+	public virtual IEnumerator MoveToPosition(Vector3 fromPos, Vector3 toPos, float timeToMove) {
 		float t = 0f;
 		while (t < 1) {
 			t += Time.deltaTime/timeToMove;
-			transform.position = Vector3.Lerp(currentPosition, position, t);
+			transform.position = Vector3.Lerp(fromPos, toPos, t);
 			yield return null;
 		}
-		transform.position = position;
+		transform.position = toPos;
 	}
 	
 	
